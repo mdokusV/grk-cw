@@ -4,6 +4,8 @@
 #include "glm.hpp"
 #include "ext.hpp"
 #include <vector>
+#include <thread>
+#include <chrono>
 
 #include "Shader_Loader.h"
 #include "Render_Utils.h"
@@ -99,6 +101,7 @@ void shutdown(GLFWwindow* window)
 //obsluga wejscia
 void processInput(GLFWwindow* window)
 {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
