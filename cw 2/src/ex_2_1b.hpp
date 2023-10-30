@@ -35,25 +35,53 @@ GLuint program;
 Core::Shader_Loader shaderLoader;
 
 unsigned int VAO;
+GLuint VBO;
 
 void renderScene(GLFWwindow* window)
 {
-	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glUseProgram(program);
 
-	// ZADANIE: Powyżej w tablicy points znajdują się wierzchołki 7-kąta foremnego, zadanie polega na narysowaniu gwiazdy siedmioramiennej jak na obrazku zad1b.jpg. Do shadera należy przesłać pozycje wierzchołków i ich odcienie z tablicy hues podobnie jak w zadaniu 1a. 
-	// Idealnie rozwiązane zadanie wymaga użycia indeksowania z użyciem Element Buffer Objects oraz trybu rysowania GL_LINE_STRIP
-	// (dodatkowe) Jedna krawędź przechodzi przez wszystkie odcienie zamiast z czerwonego do magenty. Co to powoduje? W jaki sposób byś to naprawił?
+    // Create and bind a Vertex Buffer Object (VBO) for the star vertices
+    GLuint VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
 
-	glUseProgram(program);
+    // Create and bind an Element Buffer Object (EBO) for the star indices
+    GLuint EBO;
+    glGenBuffers(1, &EBO);
+    // Define the indices to draw the star using GL_LINE_STRIP
+    GLuint indices[] = { 0, 1, 2, 3, 4, 5, 6, 0 };
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
+    // Set up the shader attributes and uniforms
+    GLuint posAttrib = glGetAttribLocation(program, "position");
+    GLuint colorAttrib = glGetAttribLocation(program, "color");
 
+    glEnableVertexAttribArray(posAttrib);
+    glEnableVertexAttribArray(colorAttrib);
 
+    glVertexAttribPointer(posAttrib, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(colorAttrib, 1, GL_FLOAT, GL_FALSE, 0, hues);
 
-	glUseProgram(0);
-	glfwSwapBuffers(window);
+    // Draw the star using GL_LINE_STRIP
+    glDrawElements(GL_LINE_STRIP, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+
+    // Clean up
+    glDisableVertexAttribArray(posAttrib);
+    glDisableVertexAttribArray(colorAttrib);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+
+    glUseProgram(0);
+    glfwSwapBuffers(window);
 }
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
