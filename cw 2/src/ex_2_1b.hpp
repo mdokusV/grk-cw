@@ -35,7 +35,8 @@ GLuint program;
 Core::Shader_Loader shaderLoader;
 
 unsigned int VAO;
-GLuint VBO;
+GLuint VBO, EBO;
+GLuint indices[] = { 0, 3, 6, 2, 5, 1, 4, 0 };
 
 void renderScene(GLFWwindow* window)
 {
@@ -43,40 +44,11 @@ void renderScene(GLFWwindow* window)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(program);
-
-    // Create and bind a Vertex Buffer Object (VBO) for the star vertices
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
+    glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+    //glDrawArrays(GL_LINE_STRIP, 0, 28);
 
-    // Create and bind an Element Buffer Object (EBO) for the star indices
-    GLuint EBO;
-    glGenBuffers(1, &EBO);
-    // Define the indices to draw the star using GL_LINE_STRIP
-    GLuint indices[] = { 0, 1, 2, 3, 4, 5, 6, 0 };
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // Set up the shader attributes and uniforms
-    GLuint posAttrib = glGetAttribLocation(program, "position");
-    GLuint colorAttrib = glGetAttribLocation(program, "color");
-
-    glEnableVertexAttribArray(posAttrib);
-    glEnableVertexAttribArray(colorAttrib);
-
-    glVertexAttribPointer(posAttrib, 4, GL_FLOAT, GL_FALSE, 0, 0);
-    glVertexAttribPointer(colorAttrib, 1, GL_FLOAT, GL_FALSE, 0, hues);
-
-    // Draw the star using GL_LINE_STRIP
-    glDrawElements(GL_LINE_STRIP, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
-
-    // Clean up
-    glDisableVertexAttribArray(posAttrib);
-    glDisableVertexAttribArray(colorAttrib);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-
+    glDrawElements(GL_LINE_STRIP, 8, GL_UNSIGNED_INT, 0);
     glUseProgram(0);
     glfwSwapBuffers(window);
 }
@@ -94,6 +66,20 @@ void init(GLFWwindow* window)
 	glEnable(GL_DEPTH_TEST);
 	program = shaderLoader.CreateProgram("shaders/shader_2_1b.vert", "shaders/shader_2_1b.frag");
 
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float), 0);
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(float), 0);
+
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 8*8, &indices, GL_STATIC_DRAW);
+    glBindVertexArray(0);
 }
 
 void shutdown(GLFWwindow* window)

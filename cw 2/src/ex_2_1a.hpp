@@ -57,30 +57,14 @@ void init(GLFWwindow* window)
 	// I Stwórz VAO
 	// 1. Stwórz nowy VAO za pomocą glGenVertexArrays i przypisz jego adres do zmiennej globalnej
 	glGenVertexArrays(1, &VAO);
-	// 2. Powiąż stworzone VAO za pomocą funkcji glBindVertexArray
 	glBindVertexArray(VAO);
-	// II Zainicjalizuj VBO
-	// 3. Stwórz VertexBufferObject do przechowywania pozycji wierzchołków za pomocą funkcji glGenBuffers
 	glGenBuffers(1, &VBO);
-	// 4. Powiąż stworzone VBO za pomocą funkcji glBindBuffer(GLenum target, GLuint )
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	// 5. Zaalokuj w GPU miejsce na tablice box i zaalakokuj ją za pomocą glBufferData
-	// std::cout << sizeof(box);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(box), &box, GL_STATIC_DRAW);
-	// II Stwórz definicję danych w buforze
-	// 6. Aktywuj atrybut powiązany z pozycją wierchołków za pomocą glEnableVertexAttribArray(GLuint index). Indeks jest zapisany w shaderze wierzchołków w 3. lini. Można odpytać shader o indeks za pomocą funkcji glGetAttribLocation(GL uint program, const GLchar *name)
 	glEnableVertexAttribArray(0);
-	// 6. Aktywuj atrybut powiązany z kolorem wierchołków za pomocą glEnableVertexAttribArray(GLuint index). Indeks jest zapisany w shaderze wierzchołków w 4. lini. Można odpytać shader o indeks za pomocą funkcji glGetAttribLocation(GL uint program, const GLchar *name)
 	glEnableVertexAttribArray(1);
-	// 8. Zdefiniuj jak OpenGL powinien interpretować dane za pomocą glVertexAttribPointer
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), 0);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(4 * sizeof(float)));
-	// w renderScene!
-	//glBindVertexArray(VAO);
-	///glDrawArrays(GL_TRIANGLES, 0, 36);
-	// ok zrobione :D
-
-	// 9. Uwolnij VAO za pomocą funkcji glBindVertexArray(0)
 	glBindVertexArray(0);
 }
 
